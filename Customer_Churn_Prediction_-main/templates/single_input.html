@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a76a8;
+            --secondary-color: #f8f9fa;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        .main-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(74,118,168,0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5f8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+        .form-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .btn-custom {
+        background-color: #4a76a8; /* Primary color */
+        color: white;
+        padding: 8px 16px;
+        border-radius: 30px; /* Rounded corners */
+        font-size: 1rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .btn-custom i {
+        margin-right: 8px;
+    }
+
+    .btn-custom:hover {
+        background-color: #3a5f8a; /* Darker shade of primary color */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    .btn-custom:focus {
+        outline: none;
+    }
+    </style>
+</head>
+<body>
+
+<div class="container">
+        <!-- Back Button -->
+        <a href="/" class="btn btn-custom" style="position: absolute; top: 10px; left: 20px;">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+
+
+    <div class="card main-card">
+        <div class="card-header text-center">
+            <h3 class="mb-0"><i class="fas fa-chart-line"></i> Customer Churn Prediction</h3>
+            <p class="mb-0 mt-2">Complete the form to predict customer retention probability</p>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" action="/single">
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <h5 class="section-title"><i class="fas fa-user"></i> Personal Information</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Senior Citizen</label>
+                                <select name="query1" class="form-control" required>
+                                    <option value="0" {% if query1 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query1 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select name="query4" class="form-control" required>
+                                    <option value="Male" {% if query4 == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if query4 == 'Female' %}selected{% endif %}>Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Tenure (months)</label>
+                                <input type="number" name="query19" class="form-control" value="{{ query19 or '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Has Partner</label>
+                                <select name="query5" class="form-control" required>
+                                    <option value="0" {% if query5 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query5 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Has Dependents</label>
+                                <select name="query6" class="form-control" required>
+                                    <option value="0" {% if query6 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query6 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Details Section -->
+                <div class="form-section">
+                    <h5 class="section-title"><i class="fas fa-concierge-bell"></i> Service Details</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Phone Service</label>
+                                <select name="query7" class="form-control" required>
+                                    <option value="0" {% if query7 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query7 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Multiple Lines</label>
+                                <select name="query8" class="form-control" required>
+                                    <option value="0" {% if query8 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query8 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Internet Service</label>
+                                <select name="query9" class="form-control" required>
+                                    <option value="DSL" {% if query9 == 'DSL' %}selected{% endif %}>DSL</option>
+                                    <option value="Fiber optic" {% if query9 == 'Fiber optic' %}selected{% endif %}>Fiber optic</option>
+                                    <option value="No" {% if query9 == 'No' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Services Section -->
+                <div class="form-section">
+                    <h5 class="section-title"><i class="fas fa-wifi"></i> Additional Services</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Online Security</label>
+                                <select name="query10" class="form-control" required>
+                                    <option value="0" {% if query10 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query10 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Online Backup</label>
+                                <select name="query11" class="form-control" required>
+                                    <option value="0" {% if query11 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query11 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Device Protection</label>
+                                <select name="query12" class="form-control" required>
+                                    <option value="0" {% if query12 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query12 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Tech Support</label>
+                                <select name="query13" class="form-control" required>
+                                    <option value="0" {% if query13 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query13 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Streaming TV</label>
+                                <select name="query14" class="form-control" required>
+                                    <option value="0" {% if query14 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query14 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Streaming Movies</label>
+                                <select name="query15" class="form-control" required>
+                                    <option value="0" {% if query15 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query15 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing Information Section -->
+                <div class="form-section">
+                    <h5 class="section-title"><i class="fas fa-credit-card"></i> Billing Information</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Contract Type</label>
+                                <select name="query16" class="form-control" required>
+                                    <option value="Month-to-month" {% if query16 == 'Month-to-month' %}selected{% endif %}>Month-to-month</option>
+                                    <option value="One year" {% if query16 == 'One year' %}selected{% endif %}>One year</option>
+                                    <option value="Two year" {% if query16 == 'Two year' %}selected{% endif %}>Two year</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Paperless Billing</label>
+                                <select name="query17" class="form-control" required>
+                                    <option value="0" {% if query17 == '0' %}selected{% endif %}>No</option>
+                                    <option value="1" {% if query17 == '1' %}selected{% endif %}>Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Payment Method</label>
+                                <select name="query18" class="form-control" required>
+                                    <option value="Bank transfer (automatic)" {% if query18 == 'Bank transfer (automatic)' %}selected{% endif %}>Bank transfer</option>
+                                    <option value="Credit card (automatic)" {% if query18 == 'Credit card (automatic)' %}selected{% endif %}>Credit card</option>
+                                    <option value="Electronic check" {% if query18 == 'Electronic check' %}selected{% endif %}>Electronic check</option>
+                                    <option value="Mailed check" {% if query18 == 'Mailed check' %}selected{% endif %}>Mailed check</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Monthly Charges ($)</label>
+                                <input type="number" step="0.01" name="query2" class="form-control" value="{{ query2 or '' }}" required>
+                                <small class="help-text">Average monthly charges</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Total Charges ($)</label>
+                                <input type="number" step="0.01" name="query3" class="form-control" value="{{ query3 or '' }}" required>
+                                <small class="help-text">Total charges to date</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">
+                    <i class="fas fa-rocket"></i> Predict Churn Probability
+                </button>
+            </form>
+
+            {% if output1 %}
+            <div class="result-box {% if 'Yes' in output1 %}danger{% else %}success{% endif %} mt-4">
+                <h4><i class="fas fa-poll"></i> Prediction Result</h4>
+                <p class="lead mb-1"><strong>{{ output1 }}</strong></p>
+                <p class="mb-0">{{ output2 }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
